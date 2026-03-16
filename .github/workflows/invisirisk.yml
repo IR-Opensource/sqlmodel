@@ -17,6 +17,12 @@ jobs:
     name: Sync fork and Run build
 
     steps:
+      # ============= InvisiRisk Setup =============
+      - name: Setup PSE
+        uses: invisirisk/pse-action@latest
+        with:
+          app_token: ${{secrets.IR_API_KEY}}
+      # ============= InvisiRisk Setup End =============
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -30,3 +36,10 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+      # ============= InvisiRisk Cleanup =============
+      - name: Cleanup PSE
+        if: always()
+        uses: invisirisk/pse-action@latest
+        with:
+          cleanup: "true"
+      # ============= InvisiRisk Cleanup End =============
