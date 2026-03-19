@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.github/workflows/*'  # Ignore changes to workflow files
+      - '.github/workflows/*'
 
 permissions:
   checks: write
@@ -22,13 +22,6 @@ jobs:
     name: Sync fork and Run build
 
     steps:
-      # ============= InvisiRisk Setup =============
-      - name: Setup PSE
-        uses: invisirisk/pse-action@latest
-        with:
-          app_token: ${{ secrets.IR_API_KEY }}
-      # ============= InvisiRisk Setup End =============
-
       # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,21 +29,21 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      # Set up Git user identity to prevent errors with commits
+      # Set up Git user identity
       - name: Set up Git user identity
         run: |
-          git config user.name "ir-bibekpradhan"  # Set your Git username
-          git config user.email "bibek.pradhan@invisirisk.com"  # Set your Git email
+          git config user.name "ir-bibekpradhan"
+          git config user.email "bibek.pradhan@invisirisk.com"
 
       # Sync with upstream (original repository)
       - name: Sync with upstream (original repository)
         run: |
-          git remote add upstream https://github.com/fastapi/sqlmodel.git  # Original repo
+          git remote add upstream https://github.com/fastapi/sqlmodel.git
           git fetch upstream
           git checkout main
           git merge upstream/main --no-edit
 
-      # Push changes to the organization's repository (IR-Opensource/sqlmodel)
+      # Use PAT from Organization Secrets to push to the repo
       - name: Push changes to organization's repository
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.MY_PAT }}@github.com/IR-Opensource/sqlmodel.git
@@ -65,11 +58,3 @@ jobs:
       # Install dependencies from requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      # ============= InvisiRisk Cleanup =============
-      - name: Cleanup PSE
-        if: always()
-        uses: invisirisk/pse-action@latest
-        with:
-          cleanup: "true"
-      # ============= InvisiRisk Cleanup End =============
