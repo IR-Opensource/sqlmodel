@@ -1,8 +1,26 @@
+name: sqlmodel x InvisiRisk
+
+on:
+  schedule:
+    - cron: '20 0 * * 1'  # every Monday morning
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/*'  # Ignore changes to workflow files
+
+permissions:
+  checks: write
+  contents: write
+  packages: read
+  actions: write
+
 jobs:
   sync-and-build:
     runs-on: ubuntu-latest
-    name: Sync fork and Run build
-
+    name: Sync fork and Run build  # Job Name
+    
     steps:
       # ============= InvisiRisk Setup =============
       - name: Setup PSE
